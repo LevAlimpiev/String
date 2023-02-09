@@ -152,6 +152,9 @@ void String::Resize(size_t new_size, char symbol) {
     for (size_t i = 0; i < size_; ++i) {
       new_str[i] = str_[i];
     }
+    for (size_t i = size_; i < new_size; ++i) {
+      new_str[i] = symbol;
+    }
     delete[] str_;
     str_ = new_str;
     size_ = new_size;
