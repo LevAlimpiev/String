@@ -4,38 +4,44 @@
 String::String() : str_(nullptr), size_(0), capacity_(0) {
 }
 
-String::String(size_t size, char symbol) : str_(nullptr), size_(0), capacity_(0) {
+String::String(size_t size, char symbol) {
+  Reserve(size);
   for (size_t i = 0; i < size; ++i) {
-    this->PushBack(symbol);
+    str_[i] = symbol;
   }
+  size_ = size;
 }
 
 String::String(const char* other) : str_(nullptr), size_(0), capacity_(0) {
   auto other_size = static_cast<size_t>(strlen(other));
+  Reserve(other_size);
+  size_ = other_size;
   for (size_t i = 0; i < other_size; ++i) {
-    this->PushBack(other[i]);
+    str_[i] = other[i];
   }
 }
 // NO lint probably may be size > other, probably process logic
 String::String(const char* other, size_t size) : str_(nullptr), size_(0), capacity_(0) {
+  Reserve(size);
+
+  size_ = size;
   for (size_t i = 0; i < size; ++i) {
-    this->PushBack(other[i]);
+    str_[i] = other[i];
   }
 }
 
 String::String(const String& other) : str_(nullptr), size_(0), capacity_(0) {
-  this->Clear();
+  Reserve(other.size_);
   for (size_t i = 0; i < other.size_; ++i) {
-    this->PushBack(other[i]);
+    str_[i] = other.str_[i];
   }
-  this->ShrinkToFit();
+  size_ = other.size_;
 }
 
 String::~String() {
   delete[] str_;
   size_ = 0;
   capacity_ = 0;
-
   str_ = nullptr;
 }
 
@@ -145,7 +151,7 @@ void String::Resize(size_t new_size, char symbol) {
     this->PushBack(symbol);
   }
   while (size_ > new_size) {
-    PopBack();
+    this->PopBack();
   }
 }
 
@@ -169,25 +175,28 @@ const char& String::operator[](size_t index) const {
 }
 
 String& String::operator=(const String& other) {
-  this->Clear();
-
+  Reserve(other.size_);
   for (size_t i = 0; i < other.size_; ++i) {
-    this->PushBack(other[i]);
+    str_[i] = other[i];
   }
-
-  this->ShrinkToFit();
+  size_ = other.size_;
   return *this;
 }
 
 String& String::operator+=(const String& other) {
-  for (size_t i = 0; i < other.size_; ++i) {
-    this->PushBack(other[i]);
+  if (this == &other) {
+    *this = *this + *this;
+  } else {
+    for (size_t i = 0; i < other.size_; ++i) {
+      this->PushBack(other[i]);
+    }
   }
   return *this;
 }
 
 String String::operator+(const String& other) const {
   String new_string;
+  new_string.Reserve(size_ + other.size_);
   for (size_t i = 0; i < size_; ++i) {
     new_string.PushBack(str_[i]);
   }
