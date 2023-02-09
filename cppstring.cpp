@@ -139,7 +139,7 @@ void String::PopBack() {
 }
 
 void String::PushBack(const char symbol) {
-  if (size_ == capacity_) {
+  while (size_ >= capacity_) {
     Reserve(std::max(static_cast<size_t>(1), capacity_ * k_capacity_multiplier_));
   }
   str_[size_] = symbol;
@@ -147,8 +147,14 @@ void String::PushBack(const char symbol) {
 }
 
 void String::Resize(size_t new_size, char symbol) {
-  for (size_t i = size_; i < new_size; ++i) {
-    this->PushBack(symbol);
+  if (new_size > size_) {
+    auto new_str = new char[new_size];
+    for (size_t i = 0; i < size_; ++i) {
+      new_str[i] = str_[i];
+    }
+    delete[] str_;
+    str_ = new_str;
+    size_ = new_size;
   }
   while (size_ > new_size) {
     this->PopBack();
