@@ -27,6 +27,7 @@ class String {
   size_t Size() const;
   size_t Length() const;
   size_t Capacity() const;
+
   char& At(size_t index);
   const char& At(size_t index) const;
   char& Front();
@@ -37,6 +38,7 @@ class String {
   char* CStr();
   const char* Data() const;
   const char* CStr() const;
+
   bool Empty() const;
   void Clear();
   void Swap(String& other);
