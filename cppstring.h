@@ -12,7 +12,7 @@ class String {
   char* str_;
   size_t size_;
   size_t capacity_;
-  const size_t k_capacity_multiplier_ = 2;
+  const size_t k_capacity_multiplier_ = 4;
 
  public:
   String();
