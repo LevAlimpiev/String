@@ -1,5 +1,5 @@
 #include "cppstring.h"
-#include "cstring"
+#include <cstring>
 
 String::String() : str_(nullptr), size_(0), capacity_(0) {
 }
@@ -13,19 +13,22 @@ String::String(size_t size, char symbol) {
 }
 
 String::String(const char* other) : str_(nullptr), size_(0), capacity_(0) {
-  auto other_size = static_cast<size_t>(strlen(other));
+  size_t other_size = strlen(other);
   Reserve(other_size);
+
   size_ = other_size;
+
   for (size_t i = 0; i < other_size; ++i) {
     str_[i] = other[i];
   }
 }
 // NO lint probably may be size > other, probably process logic
 String::String(const char* other, size_t size) : str_(nullptr), size_(0), capacity_(0) {
-  Reserve(size);
+  size_t len = std::min(strlen(other), size);
 
-  size_ = size;
-  for (size_t i = 0; i < size; ++i) {
+  Reserve(len);
+  size_ = len;
+  for (size_t i = 0; i < len; ++i) {
     str_[i] = other[i];
   }
 }
@@ -49,7 +52,6 @@ void String::Reserve(size_t new_capacity) {
   new_capacity = std::max(new_capacity, capacity_);
 
   auto new_str = new char[new_capacity];
-
   for (size_t i = 0; i < size_; ++i) {
     new_str[i] = str_[i];
   }
@@ -139,7 +141,7 @@ void String::PopBack() {
 }
 
 void String::PushBack(const char symbol) {
-  while (size_ >= capacity_) {
+  if (size_ == capacity_) {
     Reserve(std::max(static_cast<size_t>(1), capacity_ * k_capacity_multiplier_));
   }
   str_[size_] = symbol;
@@ -147,21 +149,13 @@ void String::PushBack(const char symbol) {
 }
 
 void String::Resize(size_t new_size, char symbol) {
-  if (new_size > size_) {
-    auto new_str = new char[new_size];
-    for (size_t i = 0; i < size_; ++i) {
-      new_str[i] = str_[i];
-    }
-    for (size_t i = size_; i < new_size; ++i) {
-      new_str[i] = symbol;
-    }
-    delete[] str_;
-    str_ = new_str;
-    size_ = new_size;
+  if (size_ < new_size) {
+    Reserve(new_size);
   }
-  while (size_ > new_size) {
-    this->PopBack();
+  for (size_t i = size_; i < new_size; ++i) {
+    str_[i] = symbol;
   }
+  size_ = new_size;
 }
 
 void String::ShrinkToFit() {
@@ -184,22 +178,34 @@ const char& String::operator[](size_t index) const {
 }
 
 String& String::operator=(const String& other) {
-  Reserve(other.size_);
+  auto new_str = new char[other.size_];
   for (size_t i = 0; i < other.size_; ++i) {
-    str_[i] = other[i];
+    new_str[i] = other[i];
   }
+  delete[] str_;
+
+  str_ = new_str;
   size_ = other.size_;
+  capacity_ = other.size_;
   return *this;
 }
 
 String& String::operator+=(const String& other) {
-  if (this == &other) {
-    *this = *this + *this;
-  } else {
-    for (size_t i = 0; i < other.size_; ++i) {
-      this->PushBack(other[i]);
-    }
+
+  auto new_str = new char[size_ + other.size_];
+  size_t i = 0;
+  for (; i < size_; ++i) {
+    new_str[i] = str_[i];
   }
+  for (; i - size_ < other.size_; ++i) {
+    new_str[i] = other[i - size_];
+  }
+
+  delete[] str_;
+  str_ = new_str;
+  capacity_ = size_ + other.size_;
+  size_ = size_ + other.size_;
+
   return *this;
 }
 
