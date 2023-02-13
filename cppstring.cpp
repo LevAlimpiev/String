@@ -50,6 +50,7 @@ String::~String() {
 
 void String::Reserve(size_t new_capacity) {
   new_capacity = std::max(new_capacity, capacity_);
+  new_capacity = std::min(new_capacity, k_max_string_size_);
 
   auto new_str = new char[new_capacity];
   for (size_t i = 0; i < size_; ++i) {
