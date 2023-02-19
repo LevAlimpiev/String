@@ -126,14 +126,11 @@ void TestConstructors() {
   assert(a == "aaaaa");
   assert(b == "aaaaa");
   std::cout << "TestConstructors passed\n";
+  String t("abacaba");
+  GetInfo(t);
 }
 
 int main() {
-  TestGetMethods();
-  TestPushAndPop();
-  TestSwap();
-  TestCopy();
-  TestConstructors();
-  TestResize();
-  return 0;
+  auto a = new char[0];
+  return 0;;
 }

@@ -9,11 +9,10 @@ class StringOutOfRange : public std::out_of_range {
 };
 
 class String {
-  char* str_;
-  size_t size_;
-  size_t capacity_;
-  const size_t k_capacity_multiplier_ = 2;
-  const size_t k_max_string_size_ = 1e6;
+  char* str_ = nullptr;
+  size_t size_ = 0;
+  size_t capacity_ = 0;
+  const size_t k_capacity_multiplier_ = 2;	
 
  public:
   String();

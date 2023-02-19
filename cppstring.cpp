@@ -4,8 +4,9 @@
 String::String() : str_(nullptr), size_(0), capacity_(0) {
 }
 
-String::String(size_t size, char symbol) {
+String::String(size_t size, char symbol) : str_(nullptr), size_(0), capacity_(0) {
   Reserve(size);
+
   for (size_t i = 0; i < size; ++i) {
     str_[i] = symbol;
   }
@@ -16,21 +17,20 @@ String::String(const char* other) : str_(nullptr), size_(0), capacity_(0) {
   size_t other_size = strlen(other);
   Reserve(other_size);
 
-  size_ = other_size;
-
   for (size_t i = 0; i < other_size; ++i) {
     str_[i] = other[i];
   }
+  size_ = other_size;
 }
 // NO lint probably may be size > other, probably process logic
 String::String(const char* other, size_t size) : str_(nullptr), size_(0), capacity_(0) {
   size_t len = std::min(strlen(other), size);
-
   Reserve(len);
-  size_ = len;
+
   for (size_t i = 0; i < len; ++i) {
     str_[i] = other[i];
   }
+  size_ = len;
 }
 
 String::String(const String& other) : str_(nullptr), size_(0), capacity_(0) {
@@ -50,7 +50,6 @@ String::~String() {
 
 void String::Reserve(size_t new_capacity) {
   new_capacity = std::max(new_capacity, capacity_);
-  new_capacity = std::min(new_capacity, k_max_string_size_);
 
   auto new_str = new char[new_capacity];
   for (size_t i = 0; i < size_; ++i) {
